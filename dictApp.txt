@@ -1,0 +1,1 @@
+{'mode': 'simpleMode', 'storedAnswers': {'yes': 'Y', 'no': 'N', 'default': 'D', 'cancel': 'C', 'explainMode': 'E', 'simpleMode': 'S'}}
