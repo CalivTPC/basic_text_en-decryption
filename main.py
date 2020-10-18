@@ -1,6 +1,12 @@
 from pprint import pprint
+
 dictApp = {
-    "mode": "simpleMode",
+    "sessionSettings": {
+        "mode": "S"
+    },
+    "defaultSettings": {
+        "mode": "S",
+    },
     "storedAnswers":
         {"yes": "Y",
          "no": "N",
@@ -8,14 +14,25 @@ dictApp = {
          "cancel": "C",
          "explainMode": "E",
          "simpleMode": "S"},
+
+    "StoredNames": {
+        "mode": {
+            "E": "Explain Mode",
+            "S": "Simple Mode",
+        },
+    },
 }
 
 
 texts = {
-    "questions": {"mode": "Wollen sie den Erklärungs Mode(" + dictApp["storedAnswers"]["explainMode"] + ") nutzen oder wollen sie den Simple Mode(" + dictApp["storedAnswers"]["simpleMode"] + ") Nutzen: "},
+    "questions": {"mode": "Wollen sie den " + dictApp["StoredNames"]["mode"]["S"] + "(" + dictApp["storedAnswers"]
+    ["explainMode"] + ") nutzen oder wollen sie den " + dictApp["StoredNames"]["mode"]["E"] + "(" + dictApp["storedAnswers"]
+    ["simpleMode"] + ") Nutzen: "},
+
     "answerOptions": {"mode": [
         dictApp["storedAnswers"]["explainMode"], dictApp["storedAnswers"]["simpleMode"], dictApp["storedAnswers"]["default"]
-    ]}
+        ]}
+
 }
 
 def start():
@@ -23,21 +40,18 @@ def start():
     requestMode()
 
     save()
-    print("dictApp: " + str(dictApp))
-    print("texts: " + str(texts))
+
 
 def restoreData():
     dictAppTxt = open("dictApp.txt")
     global dictApp
     dictApp = eval(dictAppTxt.read())
     dictAppTxt.close()
-    #print("dictApp: " + str(dictApp))
 
     textsTxt = open("texts.txt")
     global texts
     texts = eval(textsTxt.read())
     textsTxt.close()
-    #print("texts: " + str(texts))
 
 
 def save():
@@ -59,13 +73,23 @@ def basicRequest(text, answerOptions):
 
 
 def requestMode():
-    if basicRequest(texts["questions"]["mode"], texts["answerOptions"]["mode"]) == dictApp["storedAnswers"]["simpleMode"]:
-        print("test")
+    answer = basicRequest(texts["questions"]["mode"], texts["answerOptions"]["mode"])
+    if answer == dictApp["storedAnswers"]["simpleMode"]:
+        dictApp["defaultSettings"]["mode"] = answer
+        dictApp["sessionSettings"]["mode"] = answer
+        print("Sie nutzen nun den " + dictApp["StoredNames"]["mode"][answer])
+    elif answer == dictApp["storedAnswers"]["explainMode"]:
+        dictApp["defaultSettings"]["mode"] = answer
+        dictApp["sessionSettings"]["mode"] = answer
+        print("Sie nutzen nun den " + dictApp["StoredNames"]["mode"][answer])
+    else:
+        dictApp["sessionSettings"]["mode"] = dictApp["defaultSettings"]["mode"]
+        print("Sie nutzen nun den " + dictApp["StoredNames"]["mode"][dictApp["defaultSettings"]["mode"]])
+
+
+def log():
+    pprint("dictApp: " + str(dictApp))
+    pprint("texts: " + str(texts))
 
 
 start()
-
-
-
-
-

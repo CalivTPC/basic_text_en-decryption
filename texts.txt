@@ -1,1 +1,1 @@
-{'questions': {'mode': 'Wollen sie den Erklärungs Mode(E) nutzen oder wollen sie den Simple Mode(S) Nutzen: '}, 'answerOptions': {'mode': ['E', 'S', 'D']}}
+{'questions': {'mode': 'Wollen sie den Simple Mode(E) nutzen oder wollen sie den Explain Mode(S) Nutzen: '}, 'answerOptions': {'mode': ['E', 'S', 'D']}}
