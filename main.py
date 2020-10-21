@@ -58,35 +58,39 @@ texts = {
 
         "sessions": [
             dictApp["storedAnswers"]["1"], dictApp["storedAnswers"]["2"], dictApp["storedAnswers"]["3"], dictApp["storedAnswers"]["4"], dictApp["storedAnswers"]["5"], dictApp["storedAnswers"]["continue"]
-    ]}
+    ]},
+    "startMessage": ""
 }
 
 def start():
-    #restoreData()
+    restoreData()
     requestMode()
     requestSession()
     save("file")
-    log()
 
 
 def restoreData():
-    global dictApp, texts
-    values = ["dictApp", "texts"]
-    for i in range(len(values)):
-        file = open(values[i] + ".txt")
-        values[i] = eval(file.read())
-        file.close()
+    dictAppTxt = open("dictApp.txt")
+    global dictApp
+    dictApp = eval(dictAppTxt.read())
+    dictAppTxt.close()
+
+    textsTxt = open("texts.txt")
+    global texts
+    texts = eval(textsTxt.read())
+    textsTxt.close()
 
 
-def save(type):
-    values = ["dictApp", "texts"]
-    if type == "file":
-        for i in range(len(values)):
-            file = open(values[i] + ".txt", "w")
-            file.write(str(values[i]))
-            file.close()
+def save(method):
+    if method == "file":
+        dictAppTxt = open("dictApp.txt", "w")
+        dictAppTxt.write(str(dictApp))
+        dictAppTxt.close()
 
-    elif type == "session":
+        textsTxt = open("texts.txt", "w")
+        textsTxt.write(str(texts))
+        textsTxt.close()
+    elif method == "session":
         print("something")
 
 
@@ -115,35 +119,10 @@ def requestMode():
 
 def requestSession():
     answer = basicRequest(texts["questions"][dictApp["sessionSettings"]["mode"]]["session"], texts["answerOptions"]["sessions"])
-    if answer == dictApp["storedAnswers"]["1"]:
-        print("answer: " + answer)
-        dictApp["defaultSettings"]["session"] = answer
-        dictApp["sessionSettings"]["session"] = answer
 
-    elif answer == dictApp["storedAnswers"]["2"]:
-        print("answer: " + answer)
-        dictApp["defaultSettings"]["session"] = answer
-        dictApp["sessionSettings"]["session"] = answer
-
-    elif answer == dictApp["storedAnswers"]["3"]:
-        print("answer: " + answer)
-        dictApp["defaultSettings"]["session"] = answer
-        dictApp["sessionSettings"]["session"] = answer
-
-    elif answer == dictApp["storedAnswers"]["4"]:
-        print("answer: " + answer)
-        dictApp["defaultSettings"]["session"] = answer
-        dictApp["sessionSettings"]["session"] = answer
-
-    elif answer == dictApp["storedAnswers"]["5"]:
-        print("answer: " + answer)
-        dictApp["defaultSettings"]["session"] = answer
-        dictApp["sessionSettings"]["session"] = answer
-
-    else:
-        print("answer: " + answer)
-        dictApp["defaultSettings"]["session"] = answer
-        dictApp["sessionSettings"]["session"] = answer
+    print("answer: " + answer)
+    dictApp["defaultSettings"]["session"] = answer
+    dictApp["sessionSettings"]["session"] = answer
 
 
 def log():
