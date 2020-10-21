@@ -1,5 +1,5 @@
 from pprint import pprint
-
+import pyfiglet
 dictApp = {
     "sessionSettings": {
         "mode": "S",
@@ -44,12 +44,12 @@ texts = {
                             ["simpleMode"] + ") nutzen oder wollen sie den " + dictApp["StoredNames"]["mode"]["E"] + "(" + dictApp["storedAnswers"]
                             ["explainMode"] + ") Nutzen: ",
                   "S": {
-                        "session": "Welche session wollen Sie nutzen? " + "(" + dictApp["storedAnswers"]["1"] + ")" + " (" + dictApp["storedAnswers"]["2"] + ")" + " (" + dictApp["storedAnswers"]["3"] + ")" + " (" + dictApp["storedAnswers"]["4"] + ")" + " (" + dictApp["storedAnswers"]["5"] + "): "
+                        "session": "Welche session wollen Sie nutzen? " + "(" + dictApp["storedAnswers"]["1"] + ")" + " (" + dictApp["storedAnswers"]["2"] + ")" + " (" + dictApp["storedAnswers"]["3"] + ")" + " (" + dictApp["storedAnswers"]["4"] + ")" + " (" + dictApp["storedAnswers"]["5"] + ")*: "
                       },
                   "E": {
                         "session": "Sie können später Sessions speichern. Was soviel heisst wie sie können den privat/public/session Key speichern \n"
-                                   "Welche session wollen Sie nutzen? " + "(" + dictApp["storedAnswers"]["1"] + ")" + " (" + dictApp["storedAnswers"]["2"] + ")" + " (" + dictApp["storedAnswers"]["3"] + ")" + " (" + dictApp["storedAnswers"]["4"] + ")" + " (" + dictApp["storedAnswers"]["5"] + "): "
-                  },
+                                   "Welche session wollen Sie nutzen? " + "(" + dictApp["storedAnswers"]["1"] + ")" + " (" + dictApp["storedAnswers"]["2"] + ")" + " (" + dictApp["storedAnswers"]["3"] + ")" + " (" + dictApp["storedAnswers"]["4"] + ")" + " (" + dictApp["storedAnswers"]["5"] + ")*: "
+                    },
                   },
 
     "answerOptions": {"mode": [
@@ -57,17 +57,23 @@ texts = {
         ],
 
         "sessions": [
-            dictApp["storedAnswers"]["1"], dictApp["storedAnswers"]["2"], dictApp["storedAnswers"]["3"], dictApp["storedAnswers"]["4"], dictApp["storedAnswers"]["5"], dictApp["storedAnswers"]["continue"]
+            dictApp["storedAnswers"]["1"], dictApp["storedAnswers"]["2"], dictApp["storedAnswers"]["3"], dictApp["storedAnswers"]["4"], dictApp["storedAnswers"]["5"], dictApp["storedAnswers"]["continue"], dictApp["storedAnswers"]["default"]
     ]},
-    "startMessage": ""
+    "startMessage": "In den meisten Fällen können Sie mithilfe von \""+ dictApp["storedAnswers"]["default"] + "\" die zulest genutzte Option wählen. \nEine leer Eingabe wird nur akzeptiert wenn, die Auswahl optional ist, was man am \"*\" erkennen kann.\n"
 }
 
 def start():
+    startText()
     restoreData()
     requestMode()
     requestSession()
     save("file")
 
+
+def startText():
+    asciiWelcome = pyfiglet.figlet_format("En / Decoder")
+    print(asciiWelcome)
+    print(texts["startMessage"])
 
 def restoreData():
     dictAppTxt = open("dictApp.txt")
@@ -119,10 +125,13 @@ def requestMode():
 
 def requestSession():
     answer = basicRequest(texts["questions"][dictApp["sessionSettings"]["mode"]]["session"], texts["answerOptions"]["sessions"])
-
-    print("answer: " + answer)
-    dictApp["defaultSettings"]["session"] = answer
-    dictApp["sessionSettings"]["session"] = answer
+    if answer == dictApp["storedAnswers"]["default"]:
+        dictApp["sessionSettings"]["session"] = dictApp["defaultSettings"]["session"]
+        print("Sie haben die Option (" + dictApp["defaultSettings"]["session"] + ") gewählt")
+    else:
+        print("Sie haben die Option (" + answer + ") gewählt")
+        dictApp["defaultSettings"]["session"] = answer
+        dictApp["sessionSettings"]["session"] = answer
 
 
 def log():
