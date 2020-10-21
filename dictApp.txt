@@ -1,1 +1,1 @@
-{'sessionSettings': {'mode': 'E'}, 'defaultSettings': {'mode': 'E'}, 'storedAnswers': {'yes': 'Y', 'no': 'N', 'default': 'D', 'cancel': 'C', 'explainMode': 'E', 'simpleMode': 'S'}, 'StoredNames': {'mode': {'E': 'Explain Mode', 'S': 'Simple Mode'}}}
+dictApp
