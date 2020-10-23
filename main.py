@@ -1,5 +1,7 @@
 from pprint import pprint
 import pyfiglet
+import time
+Time = time
 
 # Values
 
@@ -7,15 +9,17 @@ dict_app = {
 
     "sessionSettings": {  #Setting for the current session
         "mode": "S",
-        "session": ""
+        "session": "",
+        "action": ""
     },
 
     "defaultSettings": {  #Last used setting
         "mode": "S",
-        "session": ""
+        "session": "",
+        "action": "N"
     },
 
-    "storedAnswers": {  #Posible snswers
+    "storedAnswers": {  #Posible answers
         "yes": "Y",
         "no": "N",
         "default": "D",
@@ -27,22 +31,25 @@ dict_app = {
         "4": "4",
         "5": "5",
         "continue": "",
-        "create": "M",
-        "use": "N"
+        "create": "G",
+        "use": "U",
+        "quit": "Q"
     },
 
-    "StoredNames": {  #Full names for shortcuts
+    "storedNames": {  #Full names for shortcuts
         "mode": {
             "E": "Explain Mode",
             "S": "Simple Mode",
         },
         "action": {
-            "M": "Machen",
-            "N": "Nutzen"
+            "G": "Generieren",
+            "U": "Nutzen",
         },
+        "divisor": "-> ",
+        "optionalSymbol": "*",
     },
 
-    "seesions": {
+    "sessions": {
         "1": {
             "names": [],
             "publicKeys": [],
@@ -80,14 +87,14 @@ dict_app = {
 texts = {
     # Questions
     "questions": {
-        "mode": "Wollen sie den " + dict_app["StoredNames"]["mode"][dict_app["storedAnswers"]["simpleMode"]] + "(" + dict_app["storedAnswers"]["simpleMode"] + ") nutzen oder wollen sie den " + dict_app["StoredNames"]["mode"][dict_app["storedAnswers"]["explainMode"]] + "(" + dict_app["storedAnswers"]["explainMode"] + ") Nutzen: ",
-        "S": {  # SimpeMode
-            "session": "Welche session wollen Sie nutzen? " + "(" + dict_app["storedAnswers"]["1"] + ")" + " (" + dict_app["storedAnswers"]["2"] + ")" + " (" + dict_app["storedAnswers"]["3"] + ")" + " (" + dict_app["storedAnswers"]["4"] + ")" + " (" + dict_app["storedAnswers"]["5"] + ")*: ",
-            "action": "Möchten sie Keys " + dict_app["StoredNames"]["action"][dict_app["storedAnswers"]["use"]] + "(" + dict_app["storedAnswers"]["use"] + ")" + " oder " + dict_app["StoredNames"]["action"][dict_app["storedAnswers"]["create"]] + "(" + dict_app["storedAnswers"]["create"] + ") ",
+        "mode": "Wollen sie den " + dict_app["storedNames"]["mode"][dict_app["storedAnswers"]["simpleMode"]] + "(" + dict_app["storedAnswers"]["simpleMode"] + ") nutzen oder wollen sie den " + dict_app["storedNames"]["mode"][dict_app["storedAnswers"]["explainMode"]] + "(" + dict_app["storedAnswers"]["explainMode"] + ") Nutzen: ",
+        "S": {  # SimpleMode
+            "session": "Welche session wollen Sie nutzen? " + "(" + dict_app["storedAnswers"]["1"] + ")" + " (" + dict_app["storedAnswers"]["2"] + ")" + " (" + dict_app["storedAnswers"]["3"] + ")" + " (" + dict_app["storedAnswers"]["4"] + ")" + " (" + dict_app["storedAnswers"]["5"] + ")" + dict_app["storedNames"]["optionalSymbol"] + ": ",
+            "action": "Möchten sie Keys " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["use"]] + "(" + dict_app["storedAnswers"]["use"] + ")" + " oder " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["create"]] + "(" + dict_app["storedAnswers"]["create"] + ") ",
         },
         "E": {  # ExplainMode
-            "session": "Sie können später Sessions speichern. Was soviel heisst wie sie können den privat/public/session Key speichern \n""Welche session wollen Sie nutzen? " + "(" + dict_app["storedAnswers"]["1"] + ")" + " (" + dict_app["storedAnswers"]["2"] + ")" + " (" + dict_app["storedAnswers"]["3"] + ")" + " (" + dict_app["storedAnswers"]["4"] + ")" + " (" + dict_app["storedAnswers"]["5"] + ")*: ",
-            "action": "Unter der auswahl \"" + dict_app["StoredNames"]["action"][dict_app["storedAnswers"]["create"]] + "\"(" + dict_app["storedAnswers"]["create"] + ")" + " werden sie die Möglichkeit habe Private/Public/Session Keys zu erstellen.\n""Mit der Option \"" + dict_app["StoredNames"]["action"][dict_app["storedAnswers"]["use"]] + "\"(" + dict_app["storedAnswers"]["use"] + ")" + " Können sie Privat/Public/Session Keys Nutzen um texte zu ver/endschlüsseln. \n""Möchten sie Keys " + dict_app["StoredNames"]["action"][dict_app["storedAnswers"]["use"]] + "(" + dict_app["storedAnswers"]["use"] + ")" + " oder " + dict_app["StoredNames"]["action"][dict_app["storedAnswers"]["create"]] + "(" + dict_app["storedAnswers"]["create"] + ") "
+            "session": "Sie können später Sessions speichern. Was so viel heisst wie sie können den privat/public/session Key speichern \n""Welche session wollen Sie nutzen? " + "(" + dict_app["storedAnswers"]["1"] + ")" + " (" + dict_app["storedAnswers"]["2"] + ")" + " (" + dict_app["storedAnswers"]["3"] + ")" + " (" + dict_app["storedAnswers"]["4"] + ")" + " (" + dict_app["storedAnswers"]["5"] + ")" + dict_app["storedNames"]["optionalSymbol"] + ": ",
+            "action": "Unter der auswahl \"" + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["create"]] + "\"(" + dict_app["storedAnswers"]["create"] + ")" + " werden sie die Möglichkeit habe Private/Public/Session Keys zu erstellen.\n""Mit der Option \"" + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["use"]] + "\"(" + dict_app["storedAnswers"]["use"] + ")" + " Können sie Privat/Public/Session Keys Nutzen um texte zu ver/endschlüsseln. \n""Möchten sie Keys " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["use"]] + "(" + dict_app["storedAnswers"]["use"] + ")" + " oder " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["create"]] + "(" + dict_app["storedAnswers"]["create"] + ") "
         },
     },
     # ! Questions
@@ -101,10 +108,11 @@ texts = {
             dict_app["storedAnswers"]["1"], dict_app["storedAnswers"]["2"], dict_app["storedAnswers"]["3"], dict_app["storedAnswers"]["4"], dict_app["storedAnswers"]["5"], dict_app["storedAnswers"]["continue"], dict_app["storedAnswers"]["default"]
         ],
         "action": [
-            dict_app["storedAnswers"]["create"]
+            dict_app["storedAnswers"]["create"], dict_app["storedAnswers"]["use"], dict_app["storedAnswers"]["default"]
         ]
     },
-    "startMessage": "In den meisten Fällen können Sie mithilfe von \"" + dict_app["storedAnswers"]["default"] + "\" die zulest genutzte Option wählen. \nEine leer Eingabe wird nur akzeptiert wenn, die Auswahl optional ist, was man am \"*\" erkennen kann.\n"
+    "startMessage": "In den meisten Fällen können Sie mithilfe von \"" + dict_app["storedAnswers"]["default"] + "\" die zulest genutzte Option wählen. \nEine leer Eingabe wird nur akzeptiert wenn, die Auswahl optional ist, was man am \"" + dict_app["storedNames"]["optionalSymbol"] + "\" erkennen kann.\n""Mit \"" + dict_app["storedAnswers"]["quit"] + "\" kann das Programm jederzeit beendet werden.",
+    "parting": "-" * 110
 }
 
 # ! Values
@@ -113,13 +121,34 @@ texts = {
 
 
 def start():
-    print_start_text()
-    #restore_data()
-    request_mode()
-    request_session()
-    request_action()
-    save("file")
 
+    # Requests
+    requests = [
+        print_start_text,
+        request_mode,
+        request_session,
+        request_action,
+
+    ]
+
+    for i in range(len(requests)):
+        if i == 4:
+            if dict_app["sessionSettings"]["action"] == dict_app["storedAnswers"]["create"]:
+                print("MMMM")
+            elif dict_app["sessionSettings"]["action"] == dict_app["storedAnswers"]["use"]:
+                print("NNNN")
+            else:
+                error()
+        wait(.2)
+        requests[i]()
+        wait(.2)
+        print_parting()
+
+
+    # ! Requests
+
+    # restore_data()
+    save()
 # ! Start
 
 # Storage
@@ -137,17 +166,14 @@ def restore_data():
     texts_txt.close()
 
 
-def save(method):
-    if method == "file":
-        dict_app_txt = open("dictApp.txt", "w")
-        dict_app_txt.write(str(dict_app))
-        dict_app_txt.close()
+def save():
+    dict_app_txt = open("dictApp.txt", "w")
+    dict_app_txt.write(str(dict_app))
+    dict_app_txt.close()
 
-        texts_txt = open("texts.txt", "w")
-        texts_txt.write(str(texts))
-        texts_txt.close()
-    elif method == "session":
-        print("something")
+    texts_txt = open("texts.txt", "w")
+    texts_txt.write(str(texts))
+    texts_txt.close()
 
 # ! Storage
 
@@ -160,40 +186,57 @@ def basic_request(text, answer_options):
         for i in range(len(answer_options)):
             if answer == answer_options[i]:
                 return answer
-
+            # Quit
+            elif answer == dict_app["storedAnswers"]["quit"]:
+                print_parting()
+                print(dict_app["storedNames"]["divisor"] + "Quit/Exit")
+                print_parting()
+                exit()
+            # ! Quit
 
 def request_mode():
     answer = basic_request(texts["questions"]["mode"], texts["answerOptions"]["mode"])
     if answer == dict_app["storedAnswers"]["simpleMode"]:
         dict_app["defaultSettings"]["mode"] = answer
         dict_app["sessionSettings"]["mode"] = answer
-        print("Sie nutzen nun den " + dict_app["StoredNames"]["mode"][answer])
+        print(dict_app["storedNames"]["divisor"] + "Sie nutzen nun den " + dict_app["storedNames"]["mode"][answer])
     elif answer == dict_app["storedAnswers"]["explainMode"]:
         dict_app["defaultSettings"]["mode"] = answer
         dict_app["sessionSettings"]["mode"] = answer
-        print("Sie nutzen nun den " + dict_app["StoredNames"]["mode"][answer])
+        print(dict_app["storedNames"]["divisor"] + "Sie nutzen nun den " + dict_app["storedNames"]["mode"][answer])
     else:
         dict_app["sessionSettings"]["mode"] = dict_app["defaultSettings"]["mode"]
-        print("Sie nutzen nun den " + dict_app["StoredNames"]["mode"][dict_app["defaultSettings"]["mode"]])
-    print_parting()
+        print(dict_app["storedNames"]["divisor"] + "Sie nutzen nun den " + dict_app["storedNames"]["mode"][dict_app["defaultSettings"]["mode"]])
 
 
 def request_session():
     answer = basic_request(texts["questions"][dict_app["sessionSettings"]["mode"]]["session"], texts["answerOptions"]["sessions"])
     if answer == dict_app["storedAnswers"]["default"]:
-        dict_app["sessionSettings"]["session"] = dict_app["defaultSettings"]["session"]
-        print("Sie haben die Option (" + dict_app["defaultSettings"]["session"] + ") gewählt")
+        if dict_app["defaultSettings"]["session"] == "":
+            print(dict_app["storedNames"]["divisor"] + "Sie fahren nun ohne Session fort")
+        else:
+            dict_app["sessionSettings"]["session"] = dict_app["defaultSettings"]["session"]
+            print(dict_app["storedNames"]["divisor"] + "Sie haben die Option (" + dict_app["defaultSettings"]["session"] + ") gewählt")
+
+    elif answer == dict_app["storedAnswers"]["continue"]:
+        print(dict_app["storedNames"]["divisor"] + "Sie fahren nun ohne Session fort")
+
     else:
-        print("Sie haben die Option (" + answer + ") gewählt")
+        print(dict_app["storedNames"]["divisor"] + "Sie haben die Option (" + answer + ") gewählt")
         dict_app["defaultSettings"]["session"] = answer
         dict_app["sessionSettings"]["session"] = answer
-    print_parting()
 
 
 def request_action():
     answer = basic_request(texts["questions"][dict_app["sessionSettings"]["mode"]]["action"], texts["answerOptions"]["action"])
+    if answer == dict_app["storedAnswers"]["default"]:
+        dict_app["sessionSettings"]["action"] = dict_app["defaultSettings"]["action"]
+        print(dict_app["storedNames"]["divisor"] + "Sie haben die Option \"" + dict_app["storedNames"]["action"][dict_app["defaultSettings"]["action"]] + "\"(" + dict_app["defaultSettings"]["action"] + ") gewählt")
+    else:
+        dict_app["sessionSettings"]["action"] = answer
+        dict_app["defaultSettings"]["action"] = answer
+        print(dict_app["storedNames"]["divisor"] + "Sie haben die Option \"" + dict_app["storedNames"]["action"][dict_app["defaultSettings"]["action"]] + "\"(" + dict_app["defaultSettings"]["action"] + ") gewählt")
 
-    print_parting()
 # ! Requests
 
 # Else
@@ -211,7 +254,17 @@ def print_start_text():
 
 
 def print_parting():
-    print("\n")
+
+    print(texts["parting"])
+
+
+def wait(secs):
+    Time.sleep(secs)
+
+
+def error():
+    print("Something went wrong")
+    start()
 
 # ! Else
 
