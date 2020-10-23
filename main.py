@@ -10,13 +10,15 @@ dict_app = {
     "sessionSettings": {  #Setting for the current session
         "mode": "S",
         "session": "",
-        "action": ""
+        "action": "",
+        "requested_key": ""
     },
 
     "defaultSettings": {  #Last used setting
         "mode": "S",
         "session": "",
-        "action": "N"
+        "action": "E",
+        "requested_key": "P"
     },
 
     "storedAnswers": {  #Posible answers
@@ -31,9 +33,12 @@ dict_app = {
         "4": "4",
         "5": "5",
         "continue": "",
-        "create": "G",
-        "use": "U",
-        "quit": "Q"
+        "create": "E",
+        "use": "N",
+        "quit": "Q",
+        "restart": "R",
+        "private/public": "P",
+        "session": "S"
     },
 
     "storedNames": {  #Full names for shortcuts
@@ -42,8 +47,12 @@ dict_app = {
             "S": "Simple Mode",
         },
         "action": {
-            "G": "Generieren",
-            "U": "Nutzen",
+            "E": "Erstellen",
+            "N": "Nutzen",
+        },
+        "kind_of_key":{
+            "P": "Private/Public",
+            "S": "Session"
         },
         "divisor": "-> ",
         "optionalSymbol": "*",
@@ -91,10 +100,12 @@ texts = {
         "S": {  # SimpleMode
             "session": "Welche session wollen Sie nutzen? " + "(" + dict_app["storedAnswers"]["1"] + ")" + " (" + dict_app["storedAnswers"]["2"] + ")" + " (" + dict_app["storedAnswers"]["3"] + ")" + " (" + dict_app["storedAnswers"]["4"] + ")" + " (" + dict_app["storedAnswers"]["5"] + ")" + dict_app["storedNames"]["optionalSymbol"] + ": ",
             "action": "Möchten sie Keys " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["use"]] + "(" + dict_app["storedAnswers"]["use"] + ")" + " oder " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["create"]] + "(" + dict_app["storedAnswers"]["create"] + ") ",
+            "kind_of_key": "Möchten Sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["private/public"]] + "\"(" + dict_app["storedAnswers"]["private/public"] + ") erstellen oder möchten sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["session"]] + "\"(" + dict_app["storedAnswers"]["session"] + ") erstellen? ",
         },
         "E": {  # ExplainMode
-            "session": "Sie können später Sessions speichern. Was so viel heisst wie sie können den privat/public/session Key speichern \n""Welche session wollen Sie nutzen? " + "(" + dict_app["storedAnswers"]["1"] + ")" + " (" + dict_app["storedAnswers"]["2"] + ")" + " (" + dict_app["storedAnswers"]["3"] + ")" + " (" + dict_app["storedAnswers"]["4"] + ")" + " (" + dict_app["storedAnswers"]["5"] + ")" + dict_app["storedNames"]["optionalSymbol"] + ": ",
-            "action": "Unter der auswahl \"" + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["create"]] + "\"(" + dict_app["storedAnswers"]["create"] + ")" + " werden sie die Möglichkeit habe Private/Public/Session Keys zu erstellen.\n""Mit der Option \"" + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["use"]] + "\"(" + dict_app["storedAnswers"]["use"] + ")" + " Können sie Privat/Public/Session Keys Nutzen um texte zu ver/endschlüsseln. \n""Möchten sie Keys " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["use"]] + "(" + dict_app["storedAnswers"]["use"] + ")" + " oder " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["create"]] + "(" + dict_app["storedAnswers"]["create"] + ") "
+            "session": "Sie können später Sessions speichern. Was so viel heisst wie sie können den private/public/session Key speichern \n""Welche session wollen Sie nutzen? " + "(" + dict_app["storedAnswers"]["1"] + ")" + " (" + dict_app["storedAnswers"]["2"] + ")" + " (" + dict_app["storedAnswers"]["3"] + ")" + " (" + dict_app["storedAnswers"]["4"] + ")" + " (" + dict_app["storedAnswers"]["5"] + ")" + dict_app["storedNames"]["optionalSymbol"] + ": ",
+            "action": "Unter der auswahl \"" + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["create"]] + "\"(" + dict_app["storedAnswers"]["create"] + ")" + " werden sie die Möglichkeit habe Private/Public/Session Keys zu erstellen.\n""Mit der Option \"" + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["use"]] + "\"(" + dict_app["storedAnswers"]["use"] + ")" + " Können sie Private/Public/Session Keys Nutzen um texte zu ver/endschlüsseln. \n""Möchten sie Keys " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["use"]] + "(" + dict_app["storedAnswers"]["use"] + ")" + " oder " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["create"]] + "(" + dict_app["storedAnswers"]["create"] + ") ",
+            "kind_of_key": "Den Public Key sollten sie mit Ihrem gesprächs Partner Teilen.\n""Nur Ihr Private Key kann Nachrichten entschlüssen welche mir Ihrem Public Key verschlüsselt wurden. \n""Geben sie auf keinen Fall ihren Private Key an Jemanden weiter. \n""Möchten Sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["private/public"]] + "\"(" + dict_app["storedAnswers"]["private/public"] + ") Key erstellen oder möchten sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["session"]] + "\"(" + dict_app["storedAnswers"]["session"] + ") Key erstellen? "
         },
     },
     # ! Questions
@@ -109,10 +120,11 @@ texts = {
         ],
         "action": [
             dict_app["storedAnswers"]["create"], dict_app["storedAnswers"]["use"], dict_app["storedAnswers"]["default"]
-        ]
+        ],
+        "kind_of_key": [dict_app["storedAnswers"]["private/public"], dict_app["storedAnswers"]["session"], dict_app["storedAnswers"]["default"]]
     },
     "startMessage": "In den meisten Fällen können Sie mithilfe von \"" + dict_app["storedAnswers"]["default"] + "\" die zulest genutzte Option wählen. \nEine leer Eingabe wird nur akzeptiert wenn, die Auswahl optional ist, was man am \"" + dict_app["storedNames"]["optionalSymbol"] + "\" erkennen kann.\n""Mit \"" + dict_app["storedAnswers"]["quit"] + "\" kann das Programm jederzeit beendet werden.",
-    "parting": "-" * 110
+    "parting": "-" * 112
 }
 
 # ! Values
@@ -120,34 +132,22 @@ texts = {
 # Start
 
 
-def start():
-
+def start(request_start):
+    # restore_data()
     # Requests
-    requests = [
+    interactive_methods = [
         print_start_text,
         request_mode,
         request_session,
         request_action,
-
+        request_kind_of_key
     ]
-
-    for i in range(len(requests)):
-        if i == 4:
-            if dict_app["sessionSettings"]["action"] == dict_app["storedAnswers"]["create"]:
-                print("MMMM")
-            elif dict_app["sessionSettings"]["action"] == dict_app["storedAnswers"]["use"]:
-                print("NNNN")
-            else:
-                error()
+    for i in range(request_start, len(interactive_methods)):
         wait(.2)
-        requests[i]()
+        interactive_methods[i]()
         wait(.2)
         print_parting()
-
-
     # ! Requests
-
-    # restore_data()
     save()
 # ! Start
 
@@ -192,6 +192,11 @@ def basic_request(text, answer_options):
                 print(dict_app["storedNames"]["divisor"] + "Quit/Exit")
                 print_parting()
                 exit()
+            elif answer == dict_app["storedAnswers"]["restart"]:
+                print_parting()
+                print(dict_app["storedNames"]["divisor"] + "Restart")
+                print_parting()
+                start()
             # ! Quit
 
 def request_mode():
@@ -237,6 +242,21 @@ def request_action():
         dict_app["defaultSettings"]["action"] = answer
         print(dict_app["storedNames"]["divisor"] + "Sie haben die Option \"" + dict_app["storedNames"]["action"][dict_app["defaultSettings"]["action"]] + "\"(" + dict_app["defaultSettings"]["action"] + ") gewählt")
 
+
+def request_kind_of_key():
+    if dict_app["sessionSettings"]["action"] == dict_app["storedAnswers"]["create"]:
+        answer = basic_request(texts["questions"][dict_app["sessionSettings"]["mode"]]["kind_of_key"], texts["answerOptions"]["kind_of_key"])
+        if answer == dict_app["storedAnswers"]["default"]:
+            dict_app["sessionSettings"]["requested_key"] = dict_app["defaultSettings"]["requested_key"]
+            print(dict_app["storedNames"]["divisor"] + "Sie haben \"" + dict_app["storedNames"]["kind_of_key"][dict_app["sessionSettings"]["requested_key"]] + "\"(" + dict_app["sessionSettings"]["requested_key"] + ") gewählt")
+        else:
+            dict_app["sessionSettings"]["requested_key"] = answer
+            dict_app["defaultSettings"]["requested_key"] = answer
+            print(dict_app["storedNames"]["divisor"] + "Sie haben \"" + dict_app["storedNames"]["kind_of_key"][dict_app["sessionSettings"]["requested_key"]] + "\"(" + dict_app["sessionSettings"]["requested_key"] + ") gewählt")
+    elif dict_app["sessionSettings"]["action"] == dict_app["storedAnswers"]["use"]:
+        print("Use")
+
+
 # ! Requests
 
 # Else
@@ -263,10 +283,10 @@ def wait(secs):
 
 
 def error():
-    print("Something went wrong")
-    start()
+    print("Something went wrong! Try to restart")
+    exit()
 
 # ! Else
 
 
-start()
+start(0)
