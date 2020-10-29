@@ -1,6 +1,7 @@
 from pprint import pprint
-#import pyfiglet
+import pyfiglet
 import time
+from cryptography.fernet import Fernet
 Time = time
 
 # Values
@@ -109,7 +110,7 @@ texts = {
             "session": "Sie können später Sessions speichern. Was so viel heisst wie sie können den private/public/session Key speichern \n""Welche session wollen Sie nutzen? " + "(" + dict_app["storedAnswers"]["1"] + ")" + " (" + dict_app["storedAnswers"]["2"] + ")" + " (" + dict_app["storedAnswers"]["3"] + ")" + " (" + dict_app["storedAnswers"]["4"] + ")" + " (" + dict_app["storedAnswers"]["5"] + ")" + dict_app["storedNames"]["optionalSymbol"] + ": ",
             "action": "Unter der auswahl \"" + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["create"]] + "\"(" + dict_app["storedAnswers"]["create"] + ")" + " werden sie die Möglichkeit habe Private/Public/Session Keys zu erstellen.\n""Mit der Option \"" + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["use"]] + "\"(" + dict_app["storedAnswers"]["use"] + ")" + " Können sie Private/Public/Session Keys Nutzen um texte zu ver/endschlüsseln. \n""Möchten sie Keys " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["use"]] + "(" + dict_app["storedAnswers"]["use"] + ")" + " oder " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["create"]] + "(" + dict_app["storedAnswers"]["create"] + ") ",
             "kind_of_key": {
-                "create": "Den Public Key sollten sie mit Ihrem gesprächs Partner Teilen.\n""Nur Ihr Private Key kann Nachrichten entschlüssen welche mir Ihrem Public Key verschlüsselt wurden. \n""Der Public Key kann nur verschlüsseln und der Private Key kann nur entschlüsseln. \n""Geben sie auf keinen Fall ihren Private Key an Jemanden weiter. \n\n""Der Session Key ist ein Schlüssel mit welchen sie verschlüsseln und entschlüsseln können. \n""Er wird Normalerweise mit hilfe des Private/Public Keys übertragen und anschliesend für die Kommunikation genutzt, \n""da er deutlich weniger Recourcen braucht. \n""Möchten Sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["private/public"]] + "\"(" + dict_app["storedAnswers"]["private/public"] + ") Key erstellen oder möchten sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["session"]] + "\"(" + dict_app["storedAnswers"]["session"] + ") Key erstellen? ",
+                "create": "Den Public Key sollten sie mit Ihrem gesprächs Partner Teilen.\n""Nur Ihr Private Key kann Nachrichten entschlüssen welche mit Ihrem Public Key verschlüsselt wurden. \n""Der Public Key kann nur verschlüsseln und der Private Key kann nur entschlüsseln. \n""Geben sie auf keinen Fall ihren Private Key an Jemanden weiter. \n\n""Der Session Key ist ein Schlüssel mit welchen sie verschlüsseln und entschlüsseln können. \n""Er wird Normalerweise mit hilfe des Private/Public Keys übertragen und anschliesend für die Kommunikation genutzt, \n""da er deutlich weniger Recourcen braucht. \n""Möchten Sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["private/public"]] + "\"(" + dict_app["storedAnswers"]["private/public"] + ") Key erstellen oder möchten sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["session"]] + "\"(" + dict_app["storedAnswers"]["session"] + ") Key erstellen? ",
                 "use": "Sie sollten den Public Key ihres Gesprächspartners nutzen. \n""Sonst wird er nicht in der Lage sein die verschlüsselte Nachricht zu entschlüsseln. \n""Falls sie eine Nachricht entschlüsseln möchten welche mit Ihrem \n""Public Key verschlüsselt wurde, müssen Sie Ihren Private Key verwenden. \n\n""Mit dem Session Key können sie Nachrichten sowohl entschlüsseln als auch verschlüsseln. \n ""Möchten Sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["private/public"]] + "\"(" + dict_app["storedAnswers"]["private/public"] + ") Key nutzen oder möchten sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["session"]] + "\"(" + dict_app["storedAnswers"]["session"] + ") Key nutzen? "
             },
         },
@@ -142,7 +143,7 @@ def start(request_start):
     # restore_data()
     # Requests
     interactive_methods = [
-        #print_start_text,
+        print_start_text,
         request_mode,
         request_session,
         request_action,
@@ -251,7 +252,7 @@ def request_action():
 
 def request_kind_of_key():
     if dict_app["sessionSettings"]["action"] == dict_app["storedAnswers"]["create"]:
-        answer = basic_request(texts["questions"][dict_app["sessionSettings"]["mode"]]["kind_of_key"], texts["answerOptions"]["kind_of_key"])
+        answer = basic_request(texts["questions"][dict_app["sessionSettings"]["mode"]]["kind_of_key"]["create"], texts["answerOptions"]["kind_of_key"])
         if answer == dict_app["storedAnswers"]["default"]:
             dict_app["sessionSettings"]["requested_key"] = dict_app["defaultSettings"]["requested_key"]
             print(dict_app["storedNames"]["divisor"] + "Sie haben \"" + dict_app["storedNames"]["kind_of_key"][dict_app["sessionSettings"]["requested_key"]] + "\"(" + dict_app["sessionSettings"]["requested_key"] + ") gewählt")
@@ -260,7 +261,7 @@ def request_kind_of_key():
             dict_app["defaultSettings"]["requested_key"] = answer
             print(dict_app["storedNames"]["divisor"] + "Sie haben \"" + dict_app["storedNames"]["kind_of_key"][dict_app["sessionSettings"]["requested_key"]] + "\"(" + dict_app["sessionSettings"]["requested_key"] + ") gewählt")
     elif dict_app["sessionSettings"]["action"] == dict_app["storedAnswers"]["use"]:
-        answer = basic_request(texts["questions"][dict_app["sessionSettings"]["mode"]]["kind_of_key"], texts["answerOptions"]["kind_of_key"])
+        answer = basic_request(texts["questions"][dict_app["sessionSettings"]["mode"]]["kind_of_key"]["use"], texts["answerOptions"]["kind_of_key"])
         if answer == dict_app["storedAnswers"]["default"]:
             dict_app["sessionSettings"]["requested_key"] = dict_app["defaultSettings"]["requested_key"]
             print(dict_app["storedNames"]["divisor"] + "Sie haben \"" + dict_app["storedNames"]["kind_of_key"][dict_app["sessionSettings"]["requested_key"]] + "\"(" + dict_app["sessionSettings"]["requested_key"] + ") gewählt")
@@ -279,10 +280,10 @@ def log():
     pprint("texts: " + str(texts))
 
 
-#def print_start_text():
-#    ascii_welcome = pyfiglet.figlet_format("En / Decryption")
-#    print(ascii_welcome)
-#    print(texts["startMessage"])
+def print_start_text():
+    ascii_welcome = pyfiglet.figlet_format("En / Decryption")
+    print(ascii_welcome)
+    print(texts["startMessage"])
 
 
 def print_parting():
