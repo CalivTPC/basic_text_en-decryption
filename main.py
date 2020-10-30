@@ -1,8 +1,16 @@
-from pprint import pprint
-import pyfiglet
-import time
+from pprint import pprint # log()
+import pyfiglet #print_start_text()
+import time # wait()
+Time = time # wait()
+# Crypto
 from cryptography.fernet import Fernet
-Time = time
+import rsa
+import base64
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
+# Crypto
+
 
 # Values
 
@@ -51,7 +59,7 @@ dict_app = {
             "E": "Erstellen",
             "N": "Nutzen",
         },
-        "kind_of_key":{
+        "kind_of_key": {
             "P": "Private/Public",
             "S": "Session"
         },
@@ -101,17 +109,35 @@ texts = {
         "S": {  # SimpleMode
             "session": "Welche session wollen Sie nutzen? " + "(" + dict_app["storedAnswers"]["1"] + ")" + " (" + dict_app["storedAnswers"]["2"] + ")" + " (" + dict_app["storedAnswers"]["3"] + ")" + " (" + dict_app["storedAnswers"]["4"] + ")" + " (" + dict_app["storedAnswers"]["5"] + ")" + dict_app["storedNames"]["optionalSymbol"] + ": ",
             "action": "Möchten sie Keys " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["use"]] + "(" + dict_app["storedAnswers"]["use"] + ")" + " oder " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["create"]] + "(" + dict_app["storedAnswers"]["create"] + ") ",
-            "kind_of_key":{
+            "kind_of_key": {
                 "create": "Möchten Sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["private/public"]] + "\"(" + dict_app["storedAnswers"]["private/public"] + ") erstellen oder möchten sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["session"]] + "\"(" + dict_app["storedAnswers"]["session"] + ") erstellen? ",
                 "use": "Möchten Sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["private/public"]] + "\"(" + dict_app["storedAnswers"]["private/public"] + ") nutzen oder möchten sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["session"]] + "\"(" + dict_app["storedAnswers"]["session"] + ") nutzen? "
             },
         },
         "E": {  # ExplainMode
-            "session": "Sie können später Sessions speichern. Was so viel heisst wie sie können den private/public/session Key speichern \n""Welche session wollen Sie nutzen? " + "(" + dict_app["storedAnswers"]["1"] + ")" + " (" + dict_app["storedAnswers"]["2"] + ")" + " (" + dict_app["storedAnswers"]["3"] + ")" + " (" + dict_app["storedAnswers"]["4"] + ")" + " (" + dict_app["storedAnswers"]["5"] + ")" + dict_app["storedNames"]["optionalSymbol"] + ": ",
-            "action": "Unter der auswahl \"" + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["create"]] + "\"(" + dict_app["storedAnswers"]["create"] + ")" + " werden sie die Möglichkeit habe Private/Public/Session Keys zu erstellen.\n""Mit der Option \"" + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["use"]] + "\"(" + dict_app["storedAnswers"]["use"] + ")" + " Können sie Private/Public/Session Keys Nutzen um texte zu ver/endschlüsseln. \n""Möchten sie Keys " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["use"]] + "(" + dict_app["storedAnswers"]["use"] + ")" + " oder " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["create"]] + "(" + dict_app["storedAnswers"]["create"] + ") ",
+            "session": "Sie können später Sessions speichern. Was so viel heisst wie sie können den private/public/session Key speichern \n"
+                       "Welche session wollen Sie nutzen? " + "(" + dict_app["storedAnswers"]["1"] + ")" + " (" + dict_app["storedAnswers"]["2"] + ")" + " (" + dict_app["storedAnswers"]["3"] + ")" + " (" + dict_app["storedAnswers"]["4"] + ")" + " (" + dict_app["storedAnswers"]["5"] + ")" + dict_app["storedNames"]["optionalSymbol"] + ": ",
+            "action": "Unter der auswahl \"" + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["create"]] + "\"(" + dict_app["storedAnswers"]["create"] + ")" + " werden sie die Möglichkeit habe Private/Public/Session Keys zu erstellen.\n"
+                "Mit der Option \"" + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["use"]] + "\"(" + dict_app["storedAnswers"]["use"] + ")" + " Können sie Private/Public/Session Keys Nutzen um texte zu ver/endschlüsseln. \n"
+                "Möchten sie Keys " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["use"]] + "(" + dict_app["storedAnswers"]["use"] + ")" + " oder " + dict_app["storedNames"]["action"][dict_app["storedAnswers"]["create"]] + "(" + dict_app["storedAnswers"]["create"] + ") ",
             "kind_of_key": {
-                "create": "Den Public Key sollten sie mit Ihrem gesprächs Partner Teilen.\n""Nur Ihr Private Key kann Nachrichten entschlüssen welche mit Ihrem Public Key verschlüsselt wurden. \n""Der Public Key kann nur verschlüsseln und der Private Key kann nur entschlüsseln. \n""Geben sie auf keinen Fall ihren Private Key an Jemanden weiter. \n\n""Der Session Key ist ein Schlüssel mit welchen sie verschlüsseln und entschlüsseln können. \n""Er wird Normalerweise mit hilfe des Private/Public Keys übertragen und anschliesend für die Kommunikation genutzt, \n""da er deutlich weniger Recourcen braucht. \n""Möchten Sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["private/public"]] + "\"(" + dict_app["storedAnswers"]["private/public"] + ") Key erstellen oder möchten sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["session"]] + "\"(" + dict_app["storedAnswers"]["session"] + ") Key erstellen? ",
-                "use": "Sie sollten den Public Key ihres Gesprächspartners nutzen. \n""Sonst wird er nicht in der Lage sein die verschlüsselte Nachricht zu entschlüsseln. \n""Falls sie eine Nachricht entschlüsseln möchten welche mit Ihrem \n""Public Key verschlüsselt wurde, müssen Sie Ihren Private Key verwenden. \n\n""Mit dem Session Key können sie Nachrichten sowohl entschlüsseln als auch verschlüsseln. \n ""Möchten Sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["private/public"]] + "\"(" + dict_app["storedAnswers"]["private/public"] + ") Key nutzen oder möchten sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["session"]] + "\"(" + dict_app["storedAnswers"]["session"] + ") Key nutzen? "
+                "create": "Den Public Key sollten sie mit Ihrem gesprächs Partner Teilen.\n"
+                    "Nur Ihr Private Key kann Nachrichten entschlüssen welche mit Ihrem Public Key verschlüsselt wurden. \n"
+                    "Der Public Key kann nur verschlüsseln und der Private Key kann nur entschlüsseln. \n"
+                    "Geben sie auf keinen Fall ihren Private Key an Jemanden weiter. \n\n"
+                          
+                    "Der Session Key ist ein Schlüssel mit welchen sie verschlüsseln und entschlüsseln können. \n"
+                    "Er wird Normalerweise mit hilfe des Private/Public Keys übertragen und anschliesend für die Kommunikation genutzt, \n"
+                    "da er deutlich weniger Recourcen braucht. \n"
+                    "Möchten Sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["private/public"]] + "\"(" + dict_app["storedAnswers"]["private/public"] + ") Key erstellen oder möchten sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["session"]] + "\"(" + dict_app["storedAnswers"]["session"] + ") Key erstellen? ",
+                "use": "Sie sollten den Public Key ihres Gesprächspartners nutzen. \n"
+                    "Sonst wird er nicht in der Lage sein die verschlüsselte Nachricht zu entschlüsseln. \n"
+                    "Falls sie eine Nachricht entschlüsseln möchten welche mit Ihrem \n"
+                    "Public Key verschlüsselt wurde, müssen Sie Ihren Private Key verwenden. \n\n"
+                       
+                    "Mit dem Session Key können sie Nachrichten sowohl entschlüsseln als auch verschlüsseln. \n "
+                    "Möchten Sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["private/public"]] + "\"(" + dict_app["storedAnswers"]["private/public"] + ") Key nutzen oder möchten sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["session"]] + "\"(" + dict_app["storedAnswers"]["session"] + ") Key nutzen? "
+
             },
         },
     },
@@ -130,7 +156,9 @@ texts = {
         ],
         "kind_of_key": [dict_app["storedAnswers"]["private/public"], dict_app["storedAnswers"]["session"], dict_app["storedAnswers"]["default"]]
     },
-    "startMessage": "In den meisten Fällen können Sie mithilfe von \"" + dict_app["storedAnswers"]["default"] + "\" die zulest genutzte Option wählen. \nEine leer Eingabe wird nur akzeptiert wenn, die Auswahl optional ist, was man am \"" + dict_app["storedNames"]["optionalSymbol"] + "\" erkennen kann.\n""Mit \"" + dict_app["storedAnswers"]["quit"] + "\" kann das Programm jederzeit beendet werden.",
+    "startMessage": "In den meisten Fällen können Sie mithilfe von \"" + dict_app["storedAnswers"]["default"] + "\" die zulest genutzte Option wählen. \n"
+        "Eine leer Eingabe wird nur akzeptiert wenn, die Auswahl optional ist, was man am \"" + dict_app["storedNames"]["optionalSymbol"] + "\" erkennen kann.\n"
+        "Mit \"" + dict_app["storedAnswers"]["quit"] + "\" kann das Programm jederzeit beendet werden.",
     "parting": "-" * 114
 }
 
@@ -206,6 +234,7 @@ def basic_request(text, answer_options):
                 start(0)
             # ! Quit
 
+
 def request_mode():
     answer = basic_request(texts["questions"]["mode"], texts["answerOptions"]["mode"])
     if answer == dict_app["storedAnswers"]["simpleMode"]:
@@ -272,6 +301,68 @@ def request_kind_of_key():
 
 # ! Requests
 
+# Cryptography
+
+# Private key decryption https://8gwifi.org/docs/python-rsa.jsp
+
+encryptedpass = bytes("myverystrongpassword", "utf-8")
+
+# Generate an RSA Keys
+private_key = rsa.generate_private_key(
+    public_exponent=65537,
+    key_size=2048,
+    backend=default_backend()
+)
+
+public_key = private_key.public_key()
+
+# Save the RSA key in PEM format
+with open("/tmp/rsakey.pem", "wb") as f:
+    f.write(private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.BestAvailableEncryption(encryptedpass),
+    )
+    )
+
+# Save the Public key in PEM format
+with open("/tmp/rsapub.pem", "wb") as f:
+    f.write(public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+    )
+
+# https://discuss.python.org/t/how-to-use-rsa-public-key-to-decrypt-ciphertext-in-python/2919/4
+
+def fun1():
+    publicKey, privateKey = rsa.newkeys(512) # Projekt based fehler
+    cipher = rsa.encrypt(b'Hello World!', publicKey)
+    base64Text = base64.b64encode(cipher).decode()
+
+    print(base64Text)
+
+    text = rsa.decrypt(base64.b64decode(base64Text.encode()), privateKey)
+    print(text.decode())
+
+# Public key decryption
+def fun2():
+    publicKey, privateKey = rsa.newkeys(512)
+    cipher = rsa.encrypt(b'Hello World!', privateKey)
+    base64Text = base64.b64encode(cipher).decode()
+
+    print(base64Text)
+
+    text = rsa.decrypt(base64.b64decode(base64Text.encode()), publicKey) # AttributeError: 'PublicKey' object has no attribute 'blinded_decrypt'
+    print(text.decode())
+
+
+fun1() # success
+fun2() # fail
+
+# ! https://discuss.python.org/t/how-to-use-rsa-public-key-to-decrypt-ciphertext-in-python/2919/4
+# ! Cryptography
+
 # Else
 
 
@@ -301,4 +392,4 @@ def error():
 # ! Else
 
 
-start(0)
+#start(0)
