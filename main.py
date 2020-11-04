@@ -1,14 +1,12 @@
-from pprint import pprint # log()
-import pyfiglet #print_start_text()
-import time # wait()
-Time = time # wait()
+from pprint import pprint  # log()
+import pyfiglet  # print_start_text()
+import time  # wait()
+Time = time  # wait()
 # Crypto
 from cryptography.fernet import Fernet
 import rsa
 import base64
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives import serialization
+
 # Crypto
 
 
@@ -135,7 +133,7 @@ texts = {
                     "Falls sie eine Nachricht entschlüsseln möchten welche mit Ihrem \n"
                     "Public Key verschlüsselt wurde, müssen Sie Ihren Private Key verwenden. \n\n"
                        
-                    "Mit dem Session Key können sie Nachrichten sowohl entschlüsseln als auch verschlüsseln. \n "
+                    "Mit dem Session Key können sie Nachrichten sowohl entschlüsseln als auch verschlüsseln. \n"
                     "Möchten Sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["private/public"]] + "\"(" + dict_app["storedAnswers"]["private/public"] + ") Key nutzen oder möchten sie einen \"" + dict_app["storedNames"]["kind_of_key"][dict_app["storedAnswers"]["session"]] + "\"(" + dict_app["storedAnswers"]["session"] + ") Key nutzen? "
 
             },
@@ -303,62 +301,25 @@ def request_kind_of_key():
 
 # Cryptography
 
-# Private key decryption https://8gwifi.org/docs/python-rsa.jsp
-
-encryptedpass = bytes("myverystrongpassword", "utf-8")
-
-# Generate an RSA Keys
-private_key = rsa.generate_private_key(
-    public_exponent=65537,
-    key_size=2048,
-    backend=default_backend()
-)
-
-public_key = private_key.public_key()
-
-# Save the RSA key in PEM format
-with open("/tmp/rsakey.pem", "wb") as f:
-    f.write(private_key.private_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.TraditionalOpenSSL,
-        encryption_algorithm=serialization.BestAvailableEncryption(encryptedpass),
-    )
-    )
-
-# Save the Public key in PEM format
-with open("/tmp/rsapub.pem", "wb") as f:
-    f.write(public_key.public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo,
-    )
-    )
-
 # https://discuss.python.org/t/how-to-use-rsa-public-key-to-decrypt-ciphertext-in-python/2919/4
 
+
 def fun1():
-    publicKey, privateKey = rsa.newkeys(512) # Projekt based fehler
-    cipher = rsa.encrypt(b'Hello World!', publicKey)
-    base64Text = base64.b64encode(cipher).decode()
+    print(texts["parting"] * 2)
+    public_key, private_key = rsa.newkeys(1024)
+    print(public_key)
+    print("private_key: " + str(private_key))
+    cipher = rsa.encrypt(b'Hello World!', public_key)  # encryption
+    print("cipher: " + str(cipher))
+    base64Text = base64.b64encode(cipher).decode()  # from bytes to string
+    print("base64Text: " + base64Text)
 
-    print(base64Text)
-
-    text = rsa.decrypt(base64.b64decode(base64Text.encode()), privateKey)
-    print(text.decode())
-
-# Public key decryption
-def fun2():
-    publicKey, privateKey = rsa.newkeys(512)
-    cipher = rsa.encrypt(b'Hello World!', privateKey)
-    base64Text = base64.b64encode(cipher).decode()
-
-    print(base64Text)
-
-    text = rsa.decrypt(base64.b64decode(base64Text.encode()), publicKey) # AttributeError: 'PublicKey' object has no attribute 'blinded_decrypt'
-    print(text.decode())
+    text = rsa.decrypt(base64.b64decode(base64Text.encode()), private_key)  #decryption
+    print("text.decode: " + text.decode())  # from bytes to string
 
 
-fun1() # success
-fun2() # fail
+fun1()  # success
+
 
 # ! https://discuss.python.org/t/how-to-use-rsa-public-key-to-decrypt-ciphertext-in-python/2919/4
 # ! Cryptography
@@ -386,7 +347,7 @@ def wait(secs):
 
 
 def error():
-    print("Something went wrong! Try to restart")
+    print("Something went wrong! Try to restart the programm")
     exit()
 
 # ! Else
