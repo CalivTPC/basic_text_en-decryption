@@ -17,7 +17,7 @@ dict_app = {
 
     "session_settings": {  #Setting for the current session
         "mode": "",
-        "session_name": "",
+        "session": "",
         "action": "",
         "requested_key": "",
         "key": {
@@ -25,17 +25,20 @@ dict_app = {
         }
     },
 
-    "default_settings": {  #Last used setting
-        "mode": "S",
-        "session": "",
+    "default_settings": {  #Last used settinghttp://www.koalastothemax.com/?aHR0cDovL3d3dy5leHRvbGUuY29tL3dwLWNvbnRlbnQvdXBsb2Fkcy8yMDE0LzA1L3JpY2tfYXN0bGV5LmpwZw==
         "action": "E",
         "requested_key": "P",
-        "session_name"
         "key": {
             "size": "1024",
         }
     },
 
+    "sessions": [
+        "test_session",
+        "default_session",
+        "private",
+        "save",
+    ],
     "stored_answers": {  #Posible answers
         "yes": "Y",
         "no": "N",
@@ -74,7 +77,9 @@ texts = {
     "questions": {
         "mode": "Wollen sie den " + dict_app["stored_names"]["mode"][dict_app["stored_answers"]["simple_mode"]] + "(" + dict_app["stored_answers"]["simple_mode"] + ") nutzen oder wollen sie den " + dict_app["stored_names"]["mode"][dict_app["stored_answers"]["explain_mode"]] + "(" + dict_app["stored_answers"]["explain_mode"] + ") Nutzen: ",
         dict_app["stored_answers"]["simple_mode"]: {  # simple_mode
-            "session": "Welche session wollen Sie nutzen? " + "(" + dict_app["stored_answers"]["1"] + ")" + " (" + dict_app["stored_answers"]["2"] + ")" + " (" + dict_app["stored_answers"]["3"] + ")" + " (" + dict_app["stored_answers"]["4"] + ")" + " (" + dict_app["stored_answers"]["5"] + ")" + dict_app["stored_names"]["optional_symbol"] + ": ",
+            "session": "hier ist eine Liste der bereits erstellten Sessions. \n" +
+                        str(dict_app["sessions"]) + "\n" +
+                        "Bitte geben sie den namen der session an welche sie nutzen wollen: ",
             "action": "Möchten sie Keys " + dict_app["stored_names"]["action"][dict_app["stored_answers"]["use"]] + "(" + dict_app["stored_answers"]["use"] + ")" + " oder " + dict_app["stored_names"]["action"][dict_app["stored_answers"]["create"]] + "(" + dict_app["stored_answers"]["create"] + ") ",
             "kind_of_key": {
                 "create": "Möchten Sie einen \"" + dict_app["stored_names"]["kind_of_key"][dict_app["stored_answers"]["private/public"]] + "\"(" + dict_app["stored_answers"]["private/public"] + ") erstellen oder möchten sie einen \"" + dict_app["stored_names"]["kind_of_key"][dict_app["stored_answers"]["session"]] + "\"(" + dict_app["stored_answers"]["session"] + ") erstellen? ",
@@ -88,7 +93,9 @@ texts = {
         },
         dict_app["stored_answers"]["explain_mode"]: {  # explain_mode
             "session": "Sie können später Sessions speichern. Was so viel heisst wie sie können den private/public/session Key speichern \n"
-                       "Welche session wollen Sie nutzen? " + "(" + dict_app["stored_answers"]["1"] + ")" + " (" + dict_app["stored_answers"]["2"] + ")" + " (" + dict_app["stored_answers"]["3"] + ")" + " (" + dict_app["stored_answers"]["4"] + ")" + " (" + dict_app["stored_answers"]["5"] + ")" + dict_app["stored_names"]["optional_symbol"] + ": ",
+                        "hier ist eine Liste der bereits erstellten Sessions. \n" +
+                        str(dict_app["sessions"]) + "\n" +
+                        "Bitte geben sie den namen der session an welche sie nutzen wollen: ",
             "action": "Unter der auswahl \"" + dict_app["stored_names"]["action"][dict_app["stored_answers"]["create"]] + "\"(" + dict_app["stored_answers"]["create"] + ")" + " werden sie die Möglichkeit habe Private/Public/Session Keys zu erstellen.\n"
                 "Mit der Option \"" + dict_app["stored_names"]["action"][dict_app["stored_answers"]["use"]] + "\"(" + dict_app["stored_answers"]["use"] + ")" + " Können sie Private/Public/Session Keys Nutzen um texte zu ver/endschlüsseln. \n"
                 "Möchten sie Keys " + dict_app["stored_names"]["action"][dict_app["stored_answers"]["use"]] + "(" + dict_app["stored_answers"]["use"] + ")" + " oder " + dict_app["stored_names"]["action"][dict_app["stored_answers"]["create"]] + "(" + dict_app["stored_answers"]["create"] + ") ",
@@ -138,7 +145,7 @@ texts = {
         ],
 
         "sessions": [
-            
+            dict_app["stored_answers"]["continue"], dict_app["sessions"]
         ],
         "action": [
             dict_app["stored_answers"]["create"], dict_app["stored_answers"]["use"], dict_app["stored_answers"]["default"]
@@ -150,9 +157,10 @@ texts = {
     "start_message": "In den meisten Fällen können Sie mithilfe von \"" + dict_app["stored_answers"]["default"] + "\" die zulest genutzte Option wählen. \n"
         "Eine leer Eingabe wird nur akzeptiert wenn, die Auswahl optional ist, was man am \"" + dict_app["stored_names"]["optional_symbol"] + "\" erkennen kann.\n"
         "Mit \"" + dict_app["stored_answers"]["quit"] + "\" kann das Programm jederzeit beendet werden.",
+    
     "parting": {
         "normal": "-",
-        "wrong": "x",
+        "wrong": "=",
     },
 }
 
@@ -212,45 +220,82 @@ def save():
 
 # Requests
 
+def handle_numeric_basic_request(answer, answer_options):
+    answer = int(answer)
+    if answer >= int(answer_options[0]) and answer <= int(answer_options[1]):
+        return answer
+    else:
+        return None
+
+
+def quit():
+    print_parting("normal", 114)
+    print(dict_app["stored_names"]["divisor"] + "Quit/Exit")
+    print_parting("normal", 114)
+    exit()
+
+def includes_list(to_check):
+    for i in range(len(to_check)):
+        if isinstance(to_check[i], list):
+            return True
+
+
+def handle_list_basic_request(answer_options):
+    position = []
+    for i in range(len(answer_options)):
+        if isinstance(answer_options[i], list):
+            position.append(i)
+            
+    for i in range(len(position)):
+        answer_options.extend(answer_options[position[i]])
+        answer_options.pop(position[i])
+    
+    return answer_options
+
+
+def is_numeric(answer_options):
+    for i in range(len(answer_options)):
+        if answer_options[i].isnumeric():
+            return True
+
 
 def basic_request(text, answer_options):
     was_wrong = False
+    list_inclouded = False
     while True:
         if was_wrong:
+            print_parting("wrong", 114)
+            print("Möglich Antworten: " + str(answer_options))
             print_parting("wrong", 114)
 
         answer = input(text)
 
-        if answer.isnumeric() and answer_options[0].isnumeric:
-            answer = int(answer)
-            if answer >= int(answer_options[0]) and answer <= int(answer_options[1]):
+        if includes_list(answer_options):
+            list_inclouded = True
+            answer_options = handle_list_basic_request(answer_options)
+
+        if answer.isnumeric() and is_numeric(answer_options):
+            if handle_numeric_basic_request(answer, answer_options) == None:
+                was_wrong = True
+        elif not list_inclouded:
+            answer = answer.upper()
+
+    # hardcode
+        # Default
+        if answer == dict_app["stored_answers"]["default"]:
+            return answer
+        # ! Default
+        # Quit
+        elif answer == dict_app["stored_answers"]["quit"]:
+            quit()
+         # ! Quit
+    # ! hardcode
+            
+        for i in range(len(answer_options)):
+            if answer == answer_options[i]:
                 return answer
             else:
                 was_wrong = True
-
-        else:
-            answer = answer.upper()
-
-        # hardcode
-            # Default
-            if answer == dict_app["stored_answers"]["default"]:
-                return answer
-            # ! Default
-            # Quit
-            elif answer == dict_app["stored_answers"]["quit"]:
-                print_parting("normal", 114)
-                print(dict_app["stored_names"]["divisor"] + "Quit/Exit")
-                print_parting("normal", 114)
-                exit()
-             # ! Quit
-        # ! hardcode
-
-            for i in range(len(answer_options)):
-                if answer == answer_options[i]:
-                    return answer
-
-                else:
-                    was_wrong = True
                
 
 
@@ -276,13 +321,13 @@ def request_session():
             print(dict_app["stored_names"]["divisor"] + "Sie fahren nun ohne Session fort")
         else:
             dict_app["session_settings"]["session"] = dict_app["default_settings"]["session"]
-            print(dict_app["stored_names"]["divisor"] + "Sie haben die Option (" + dict_app["default_settings"]["session"] + ") gewählt")
+            print(dict_app["stored_names"]["divisor"] + "Sie haben die Session \"" + dict_app["default_settings"]["session"] + "\" gewählt")
 
     elif answer == dict_app["stored_answers"]["continue"]:
         print(dict_app["stored_names"]["divisor"] + "Sie fahren nun ohne Session fort")
 
     else:
-        print(dict_app["stored_names"]["divisor"] + "Sie haben die Option (" + answer + ") gewählt")
+        print(dict_app["stored_names"]["divisor"] + "Sie haben die Session \"" + answer + "\" gewählt")
         dict_app["default_settings"]["session"] = answer
         dict_app["session_settings"]["session"] = answer
 
