@@ -169,7 +169,7 @@ texts = {
                 "session": "Ein gültiger Session Key muss 32bit gross sein. \n" 
                     "Bitte geben sie einen gültigen Session Key an: ",
             },
-            
+
             "message": {
                 "to_decrypt": "Bitte geben Sie die verschlüsselte Nachricht an: ",
                 "to_encrypt": "Bitte geben Sie die Nachricht ein welche sie verschlüsseln möchten: ",
@@ -291,7 +291,10 @@ def start_use():
         request_private_public_key()
     elif dict_app["session_settings"]["requested_key"] == dict_app["stored_answers"]["session"]:
         request_session_key()
-    
+        if dict_app["session_settings"]["action_use"] == dict_app["stored_answers"]["encrypt"]:
+            encrypt_session_key()
+        elif dict_app["session_settings"]["action_use"] == dict_app["stored_answers"]["decrypt"]:
+            decrypt_session_key()
     print("not written yet")
 # ! Start
 
@@ -472,7 +475,7 @@ def request_action_use():
     answer = basic_request(texts["questions"][dict_app["session_settings"]["mode"]]["action_use"], texts["answer_options"]["action_use"])
     if answer == dict_app["stored_answers"]["default"]:
         dict_app["session_settings"]["action_use"] = dict_app["default_settings"]["action_use"]
-        print(dict_app["stored_names"]["divisor"] + "Sie haben die Option \"" + dict_app["stored_names"]["action"][dict_app["default_settings"]["action"]] + "\"(" + dict_app["default_settings"]["action"] + ") gewählt")
+        print(dict_app["stored_names"]["divisor"] + "Sie haben die Option \"" + dict_app["stored_names"]["action_use"][dict_app["default_settings"]["action_use"]] + "\"(" + dict_app["default_settings"]["action_use"] + ") gewählt")
     else:
         dict_app["session_settings"]["action_use"] = answer
         dict_app["default_settings"]["action_use"] = answer
@@ -486,7 +489,7 @@ def request_session_key():
             quit()
         try:
             Fernet(answer)
-            texts["questions"][dict_app["session_settings"]["mode"]]["key"]["private_public"] = answer
+            dict_app["session_settings"]["key"]["session"] = answer
             break
         except:
             print("der angegebene Key ist ungültig")
@@ -511,6 +514,8 @@ def request_message():
     elif dict_app["session_settings"]["action_use"] == dict_app["stored_answers"]["decrypt"]:
         answer = input(texts["questions"][dict_app["session_settings"]["mode"]]["message"]["to_decrypt"])
 
+    dict_app["session_settings"]["message"] = answer
+    print(dict_app["stored_names"]["divisor"] + "ihre Nachricht: " + dict_app["session_settings"]["message"])
 
 # ! Requests
 
@@ -559,11 +564,15 @@ def create_session_key():
 
 
 def encrypt_session_key():
-    key = Fernet(dict_app["session_settings"]["key"]["session"])
+    key = Fernet(bytes(dict_app["session_settings"]["key"]["session"], "utf8"))
+    dict_app["session_settings"]["message"] = str(key.encrypt(bytes(dict_app["session_settings"]["message"], "utf8")), "utf8")
+    print("verschlüsselte Nachricht: " + dict_app["session_settings"]["message"])
 
 
 def decrypt_session_key():
-    None
+    key = Fernet(bytes(dict_app["session_settings"]["key"]["session"], "utf8"))
+    dict_app["session_settings"]["message"] = str(key.decrypt(bytes(dict_app["session_settings"]["message"], "utf8")), "utf8")
+    print("entschlüsselte Nachricht: " + dict_app["session_settings"]["message"])
     
 # ! Cryptography
 
