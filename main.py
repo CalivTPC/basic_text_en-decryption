@@ -21,6 +21,7 @@ dict_app = {
         "action": "",
         "action_use": "",
         "requested_key": "",
+        "private_or_public_key": "",
         "message": "",
         "key": {
             "session": "",
@@ -36,6 +37,7 @@ dict_app = {
         "action": "N",
         "action_use": "V",
         "requested_key": "S",
+        "private_or_public_key": "PR",
         "key": {
             "size": "4096",
         }
@@ -72,7 +74,9 @@ dict_app = {
         "5": "5",
         "6": "6",
         "encrypt": "V",
-        "decrypt": "E"
+        "decrypt": "E",
+        "private": "PR",
+        "public": "PU",
     },
 
     "stored_names": {  #Full names for shortcuts
@@ -92,8 +96,14 @@ dict_app = {
             "P": "Private/Public",
             "S": "Session"
         },
+        "private_or_public_key":
+        {
+            "PR": "private",
+            "PU": "public",
+        },
         "divisor": "-> ",
         "optional_symbol": "*",
+
     },
 }
 
@@ -128,6 +138,7 @@ texts = {
                 "to_decrypt": "Bitte geben Sie die verschlüsselte Nachricht an: ",
                 "to_encrypt": "Bitte geben Sie die Nachricht ein welche sie verschlüsseln möchten: ",
             },
+            "private_or_public_key": "werden sie den private(" + dict_app["stored_answers"]["private"] + ") oder den public(" + dict_app["stored_answers"]["public"] + ") key nutzen?: "
         },
         dict_app["stored_answers"]["explain_mode"]: {  # explain_mode
             "session": "Sie können später Sessions speichern. Was so viel heisst wie sie können den private/public/session Key speichern \n"
@@ -168,12 +179,16 @@ texts = {
             "key": {
                 "session": "Ein gültiger Session Key muss 32bit gross sein. \n" 
                     "Bitte geben sie einen gültigen Session Key an: ",
+                "private": "Bitte geben sie einen gültigen private Key an: ",
+                "public": "Bitte geben sie einen gültigen public Key an: ",
+            
             },
 
             "message": {
                 "to_decrypt": "Bitte geben Sie die verschlüsselte Nachricht an: ",
                 "to_encrypt": "Bitte geben Sie die Nachricht ein welche sie verschlüsseln möchten: ",
             },
+            "private_or_public_key": "werden sie den private(" + dict_app["stored_answers"]["private"] + ") oder den public(" + dict_app["stored_answers"]["public"] + ") key nutzen?: "
         },
     },
     # ! Questions
@@ -209,6 +224,9 @@ texts = {
         "key_size": [
             dict_app["stored_answers"]["1"], dict_app["stored_answers"]["2"], dict_app["stored_answers"]["3"], dict_app["stored_answers"]["4"], dict_app["stored_answers"]["5"], dict_app["stored_answers"]["6"] 
         ],
+        "private_or_public_key": [
+            dict_app["stored_answers"]["private"], dict_app["stored_answers"]["public"]
+        ]
     },
     "start_message": "Sie können mithilfe von \"" + dict_app["stored_answers"]["default"] + "\" die zuletzt genutzte Option wählen. \n"
         "Eine leer Eingabe wird nur akzeptiert wenn, die Auswahl optional ist, was man am \"" + dict_app["stored_names"]["optional_symbol"] + "\" erkennen kann.\n"
@@ -288,7 +306,24 @@ def start_use():
         print_parting("normal", 114)
     
     if dict_app["session_settings"]["requested_key"] == dict_app["stored_answers"]["private/public"]:
-        request_private_public_key()
+        request_private_or_public_key()
+        if dict_app["session_settings"]["private_or_public_key"] == dict_app["stored_answers"]["private"]:
+            request_private_key()
+        elif dict_app["session_settings"]["private_or_public_key"] == dict_app["stored_answers"]["public"]:
+            request_public_key()
+
+        if dict_app["session_settings"]["action_use"] == dict_app["stored_answers"]["encrypt"]:
+            if dict_app["session_settings"]["private_or_public_key"] == dict_app["stored_answers"]["private"]:
+                encrypt_private_key()
+            elif dict_app["session_settings"]["private_or_public_key"] == dict_app["stored_answers"]["public"]:
+                encrypt_public_key()
+        elif dict_app["session_settings"]["action_use"] == dict_app["stored_answers"]["decrypt"]:
+            if dict_app["session_settings"]["private_or_public_key"] == dict_app["stored_answers"]["private"]:
+                decrypt_private_key
+            elif dict_app["session_settings"]["private_or_public_key"] == dict_app["stored_answers"]["public"]:
+                decrypt_public_key
+
+
     elif dict_app["session_settings"]["requested_key"] == dict_app["stored_answers"]["session"]:
         request_session_key()
         if dict_app["session_settings"]["action_use"] == dict_app["stored_answers"]["encrypt"]:
@@ -494,18 +529,44 @@ def request_session_key():
         except:
             print("der angegebene Key ist ungültig")
 
+def request_private_or_public_key():
+    answer = basic_request(texts["questions"][dict_app["session_settings"]["mode"]]["private_or_public_key"], texts["answer_options"]["private_or_public_key"])
+    if answer == dict_app["stored_answers"]["default"]:
+        dict_app["session_settings"]["private_or_public_key"] = dict_app["default_settings"]["private_or_public_key"]
+        print(dict_app["stored_names"]["divisor"] + "Sie haben die Option \"" + dict_app["stored_names"]["private_or_public_key"][dict_app["default_settings"]["private_or_public_key"]] + "\"(" + dict_app["default_settings"]["action_use"] + ") gewählt")
+    else:
+        dict_app["session_settings"]["private_or_public_key"] = answer
+        dict_app["default_settings"]["private_or_public_key"] = answer
+        print(dict_app["stored_names"]["divisor"] + "Sie haben die Option \"" + dict_app["stored_names"]["private_or_public_key"][dict_app["default_settings"]["private_or_public_key"]] + "\"(" + dict_app["default_settings"]["private_or_public_key"] + ") gewählt")
 
-def request_private_public_key():
+
+def request_private_key():
     while True:
-        answer = input(texts["questions"][dict_app["session_settings"]["mode"]]["key"]["session"])
+        answer = input(texts["questions"][dict_app["session_settings"]["mode"]]["key"]["private"])
         if answer == dict_app["stored_answers"]["quit"]:
             quit()
         try:
-            Fernet(answer)
-            texts["questions"][dict_app["session_settings"]["mode"]]["key"]["session"] = answer
+            RSA.import_key(answer)
+            texts["questions"][dict_app["session_settings"]["mode"]]["key"]["private"] = answer
             break
         except:
             print("der angegebene Key ist ungültig")
+
+
+def request_public_key():
+    while True:
+        answer = input(texts["questions"][dict_app["session_settings"]["mode"]]["key"]["public"])
+        if answer == dict_app["stored_answers"]["quit"]:
+            quit()
+        try:
+            RSA.import_key(answer)
+            texts["questions"][dict_app["session_settings"]["mode"]]["key"]["public"] = answer
+            break
+        except:
+            print("der angegebene Key ist ungültig")
+
+
+
 
 
 def request_message():
@@ -573,7 +634,39 @@ def decrypt_session_key():
     key = Fernet(bytes(dict_app["session_settings"]["key"]["session"], "utf8"))
     dict_app["session_settings"]["message"] = str(key.decrypt(bytes(dict_app["session_settings"]["message"], "utf8")), "utf8")
     print("entschlüsselte Nachricht: " + dict_app["session_settings"]["message"])
-    
+
+
+def encrypt_private_key():
+    private_txt = open("keys/private_public/latest/private.txt", "r")
+    private_key = RSA.import_key(private_txt.read())
+    private_txt.close()
+    dict_app["session"]["settings"]["message"] = private_key.encrypt(dict_app["session"]["settings"]["message"])
+    print("Mit Private key verschlüsselte Nachricht: " + dict_app["session"]["settings"]["message"])
+
+
+def encrypt_public_key():
+    public_txt = open("keys/private_public/latest/public.txt", "r")
+    public_key = RSA.import_key(public_txt.read())
+    public_txt.close()
+    dict_app["session"]["settings"]["message"] = public_key.encrypt(dict_app["session"]["settings"]["message"])
+    print("Mit public key verschlüsselte Nachricht: " + dict_app["session"]["settings"]["message"])
+
+
+def decrypt_private_key():
+    private_txt = open("keys/private_public/latest/private.txt", "r")
+    private_key = RSA.import_key(private_txt.read())
+    private_txt.close()
+    dict_app["session"]["settings"]["message"] = private_key.decrypt(dict_app["session"]["settings"]["message"])
+    print("Mit private key entschlüsselte Nachricht: " + dict_app["session"]["settings"]["message"])
+
+
+def decrypt_public_key():
+    public_txt = open("keys/private_public/latest/private.txt", "r")
+    public_key = RSA.import_key(public_txt.read())
+    public_txt.close()
+    dict_app["session"]["settings"]["message"] = public_key.decrypt(dict_app["session"]["settings"]["message"])
+    print("Mit public key entschlüsselte Nachricht: " + dict_app["session"]["settings"]["message"])
+
 # ! Cryptography
 
 # Else
