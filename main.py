@@ -3,10 +3,11 @@ import pyfiglet  # print_start_text()
 import time  # wait()
 Time = time  # wait()
 # Crypto
+from Crypto.Cipher import PKCS1_v1_5
 from Crypto.PublicKey import RSA
 from cryptography.fernet import Fernet
 #import rsa
-#import base64
+from base64 import b64decode,b64encode
 
 # Crypto
 
@@ -141,14 +142,21 @@ texts = {
             "private_or_public_key": "werden sie den private(" + dict_app["stored_answers"]["private"] + ") oder den public(" + dict_app["stored_answers"]["public"] + ") key nutzen?: "
         },
         dict_app["stored_answers"]["explain_mode"]: {  # explain_mode
-            "session": "Sie können später Sessions speichern. Was so viel heisst wie sie können den private/public/session Key speichern \n"
-                        "hier ist eine Liste der bereits erstellten Sessions. \n" +
-                        str(dict_app["sessions"]) + "\n" +
-                        "Bitte geben sie den namen der session an welche sie nutzen wollen" + dict_app["stored_names"]["optional_symbol"] + ": ",
-            "action": "Unter der auswahl \"" + dict_app["stored_names"]["action"][dict_app["stored_answers"]["create"]] + "\"(" + dict_app["stored_answers"]["create"] + ")" + " werden sie die Möglichkeit habe Private/Public/Session Keys zu erstellen.\n"
+            "session": 
+                "Sie können später Sessions speichern. Was so viel heisst wie sie können den private/public/session Key speichern \n"
+                "hier ist eine Liste der bereits erstellten Sessions. \n" +
+                str(dict_app["sessions"]) + "\n" +
+                "Bitte geben sie den namen der session an welche sie nutzen wollen" + dict_app["stored_names"]["optional_symbol"] + ": ",
+            
+            "action": 
+                "Unter der auswahl \"" + dict_app["stored_names"]["action"][dict_app["stored_answers"]["create"]] + "\"(" + dict_app["stored_answers"]["create"] + ")" + " werden sie die Möglichkeit habe Private/Public/Session Keys zu erstellen.\n"
                 "Mit der Option \"" + dict_app["stored_names"]["action"][dict_app["stored_answers"]["use"]] + "\"(" + dict_app["stored_answers"]["use"] + ")" + " Können sie Private/Public/Session Keys Nutzen um texte zu ver/endschlüsseln. \n"
                 "Möchten sie Keys " + dict_app["stored_names"]["action"][dict_app["stored_answers"]["use"]] + "(" + dict_app["stored_answers"]["use"] + ")" + " oder " + dict_app["stored_names"]["action"][dict_app["stored_answers"]["create"]] + "(" + dict_app["stored_answers"]["create"] + ") ",
-                "action_use": "Möchten sie Text Verschlüsseln(" + dict_app["stored_answers"]["encrypt"] + ") oder Entschlüsseln(" + dict_app["stored_answers"]["decrypt"] + "): ",
+                
+                "action_use": 
+                    "Falls sie die Option Verschlüsseln wählen werden sie gezwungen den Public key zu verwenden. \n"
+                    "Sollten sie die Option Entschlüsseln wählen werden sie gezwungen den Private key zu nutzen. \n"
+                    "Möchten sie Text Verschlüsseln(" + dict_app["stored_answers"]["encrypt"] + ") oder Entschlüsseln(" + dict_app["stored_answers"]["decrypt"] + "): ",
 
             "kind_of_key": {
                 "create": "Den Public Key sollten sie mit Ihrem gesprächs Partner Teilen.\n"
@@ -175,12 +183,19 @@ texts = {
                 "4096: 0.25 sec \t 8192: 11.5 sec \t 16384: 39.1 sec \n"
                 "Bitte geben sie an wie gross ihr Key sein soll die haben folgende Optionen \n"
                 "\"1024\"(" + dict_app["stored_answers"]["1"] + "), \"2048\"(" + dict_app["stored_answers"]["2"] + "), \"3072\"(" + dict_app["stored_answers"]["3"] + "), \"4096\"(" + dict_app["stored_answers"]["4"] + "), \"8192\"(" + dict_app["stored_answers"]["5"] + "), \"16384\"(" + dict_app["stored_answers"]["6"] + "): ",
-
+            
             "key": {
-                "session": "Ein gültiger Session Key muss 32bit gross sein. \n" 
+                "session": 
+                    "Ein gültiger Session Key muss 32bit gross sein. \n" 
                     "Bitte geben sie einen gültigen Session Key an: ",
-                "private": "Bitte geben sie einen gültigen private Key an: ",
-                "public": "Bitte geben sie einen gültigen public Key an: ",
+                "private":
+                    "Es ist möglich ein Public key einzugeben ohne das dieser als ungültig erkannt wird. \n"
+                    "Sollte man allerdings nicht tuhen da das Programm dann nicht mehr richtig funktioniert \n" 
+                    "Bitte geben sie einen gültigen private Key an: ",
+                "public":
+                    "Es ist möglich ein Private key einzugeben ohne das dieser als ungültig erkannt wird. \n"
+                    "Sollte man allerdings nicht tuhen da das Programm dann nicht mehr richtig funktioniert \n"  
+                    "Bitte geben sie einen gültigen public Key an: ",
             
             },
 
@@ -250,7 +265,7 @@ def start():
     interactive_methods = [
         print_start_message,
         request_mode,
-        request_session_use,
+        #request_session_use,
         request_action,
     ]
     for i in range(len(interactive_methods)):
@@ -289,7 +304,7 @@ def start_create():
     elif dict_app["session_settings"]["requested_key"] == dict_app["stored_answers"]["session"]:
         create_session_key()    
 
-    print("not written yet")
+    print(":: Program END")
 
 
 def start_use():
@@ -306,23 +321,27 @@ def start_use():
         print_parting("normal", 114)
     
     if dict_app["session_settings"]["requested_key"] == dict_app["stored_answers"]["private/public"]:
-        request_private_or_public_key()
+        chosePrivateOrPublicKey()
         if dict_app["session_settings"]["private_or_public_key"] == dict_app["stored_answers"]["private"]:
-            request_private_key()
+            print("Diese funktion ist noch nicht im programm implementiert \n"
+            "alternative: https://www.devglan.com/online-tools/rsa-encryption-decryption")
+            exit()
+            #request_private_key()
+
         elif dict_app["session_settings"]["private_or_public_key"] == dict_app["stored_answers"]["public"]:
             request_public_key()
 
         if dict_app["session_settings"]["action_use"] == dict_app["stored_answers"]["encrypt"]:
-            if dict_app["session_settings"]["private_or_public_key"] == dict_app["stored_answers"]["private"]:
-                encrypt_private_key()
-            elif dict_app["session_settings"]["private_or_public_key"] == dict_app["stored_answers"]["public"]:
-                encrypt_public_key()
+            #if dict_app["session_settings"]["private_or_public_key"] == dict_app["stored_answers"]["private"]:
+            #    encrypt_private_key()
+            #elif dict_app["session_settings"]["private_or_public_key"] == dict_app["stored_answers"]["public"]:
+            encrypt_public_key()
         elif dict_app["session_settings"]["action_use"] == dict_app["stored_answers"]["decrypt"]:
-            if dict_app["session_settings"]["private_or_public_key"] == dict_app["stored_answers"]["private"]:
-                decrypt_private_key
-            elif dict_app["session_settings"]["private_or_public_key"] == dict_app["stored_answers"]["public"]:
-                decrypt_public_key
-
+            pass
+            # if dict_app["session_settings"]["private_or_public_key"] == dict_app["stored_answers"]["private"]:
+            #decrypt_private_key()
+            #elif dict_app["session_settings"]["private_or_public_key"] == dict_app["stored_answers"]["public"]:
+            #    decrypt_public_key
 
     elif dict_app["session_settings"]["requested_key"] == dict_app["stored_answers"]["session"]:
         request_session_key()
@@ -330,19 +349,20 @@ def start_use():
             encrypt_session_key()
         elif dict_app["session_settings"]["action_use"] == dict_app["stored_answers"]["decrypt"]:
             decrypt_session_key()
-    print("not written yet")
+    
+    print("::Programm END")
 # ! Start
 
 # Storage
 
 
 def restore_data():
-    dict_app_txt = open("dictApp.txt")
+    dict_app_txt = open("values/dictApp.txt", "r")
     global dict_app
     dict_app = eval(dict_app_txt.read())
     dict_app_txt.close()
 
-    texts_txt = open("texts.txt")
+    texts_txt = open("values/texts.txt", "r")
     global texts
     texts = eval(texts_txt.read())
     texts_txt.close()
@@ -357,6 +377,7 @@ def save():
     texts_txt.write(str(texts))
     texts_txt.close()
 
+    
 # ! Storage
 
 # Requests
@@ -421,6 +442,13 @@ def basic_request(text, answer_options):
             else:
                 was_wrong = True
                
+def key_request(question):
+    print(question)
+    answer = list(iter(input, ''))
+    text = ""
+    for i in range(len(answer)):
+        text = text + answer[i] + "\n"
+    return text
 
 
 def request_mode():
@@ -527,7 +555,8 @@ def request_session_key():
             dict_app["session_settings"]["key"]["session"] = answer
             break
         except:
-            print("der angegebene Key ist ungültig")
+            print("der angegebene Key ist ungültig \n")
+
 
 def request_private_or_public_key():
     answer = basic_request(texts["questions"][dict_app["session_settings"]["mode"]]["private_or_public_key"], texts["answer_options"]["private_or_public_key"])
@@ -542,30 +571,28 @@ def request_private_or_public_key():
 
 def request_private_key():
     while True:
-        answer = input(texts["questions"][dict_app["session_settings"]["mode"]]["key"]["private"])
+        answer = key_request(texts["questions"][dict_app["session_settings"]["mode"]]["key"]["private"])
         if answer == dict_app["stored_answers"]["quit"]:
             quit()
         try:
             RSA.import_key(answer)
-            texts["questions"][dict_app["session_settings"]["mode"]]["key"]["private"] = answer
+            dict_app["session_settings"]["key"]["private"] = answer
             break
         except:
-            print("der angegebene Key ist ungültig")
+            print("der angegebene Key ist ungültig \n")
 
 
 def request_public_key():
     while True:
-        answer = input(texts["questions"][dict_app["session_settings"]["mode"]]["key"]["public"])
+        answer = key_request(texts["questions"][dict_app["session_settings"]["mode"]]["key"]["public"])
         if answer == dict_app["stored_answers"]["quit"]:
             quit()
         try:
             RSA.import_key(answer)
-            texts["questions"][dict_app["session_settings"]["mode"]]["key"]["public"] = answer
+            dict_app["session_settings"]["key"]["public"] = answer
             break
         except:
-            print("der angegebene Key ist ungültig")
-
-
+            print("der angegebene Key ist ungültig \n")
 
 
 
@@ -578,8 +605,9 @@ def request_message():
     dict_app["session_settings"]["message"] = answer
     print(dict_app["stored_names"]["divisor"] + "ihre Nachricht: " + dict_app["session_settings"]["message"])
 
-# ! Requests
 
+
+# ! Requests
 
 
 # Cryptography
@@ -637,39 +665,42 @@ def decrypt_session_key():
 
 
 def encrypt_private_key():
-    private_txt = open("keys/private_public/latest/private.txt", "r")
-    private_key = RSA.import_key(private_txt.read())
-    private_txt.close()
-    dict_app["session"]["settings"]["message"] = private_key.encrypt(dict_app["session"]["settings"]["message"])
-    print("Mit Private key verschlüsselte Nachricht: " + dict_app["session"]["settings"]["message"])
+    private_key = RSA.import_key(dict_app["session_settings"]["key"]["private"])
+    encrypter = PKCS1_v1_5.new(private_key)
+    dict_app["session_settings"]["message"] = encrypter.encrypt(bytes(dict_app["session_settings"]["message"], "utf-8"))
+    print("Mit Private key verschlüsselte Nachricht: ")
+    print( dict_app["session_settings"]["message"])
 
 
 def encrypt_public_key():
-    public_txt = open("keys/private_public/latest/public.txt", "r")
-    public_key = RSA.import_key(public_txt.read())
-    public_txt.close()
-    dict_app["session"]["settings"]["message"] = public_key.encrypt(dict_app["session"]["settings"]["message"])
-    print("Mit public key verschlüsselte Nachricht: " + dict_app["session"]["settings"]["message"])
+    public_key = RSA.import_key(dict_app["session_settings"]["key"]["public"])
+    encrypter = PKCS1_v1_5.new(public_key)
+    dict_app["session_settings"]["message"] = encrypter.encrypt(bytes(dict_app["session_settings"]["message"], "utf-8"))
+    print("Mit public key verschlüsselte Nachricht: ")
+    print(dict_app["session_settings"]["message"])
 
 
 def decrypt_private_key():
-    private_txt = open("keys/private_public/latest/private.txt", "r")
-    private_key = RSA.import_key(private_txt.read())
-    private_txt.close()
-    dict_app["session"]["settings"]["message"] = private_key.decrypt(dict_app["session"]["settings"]["message"])
-    print("Mit private key entschlüsselte Nachricht: " + dict_app["session"]["settings"]["message"])
-
+    private_key = RSA.import_key(dict_app["session_settings"]["key"]["private"])
+    decrypter = PKCS1_v1_5.new(private_key)
+    encrypted = bytes(dict_app["session_settings"]["message"], "utf-8")
+    dict_app["session_settings"]["message"] = decrypter.decrypt(encrypted, RuntimeError)
+    print("Mit private key entschlüsselte Nachricht: " + dict_app["session_settings"]["message"])
 
 def decrypt_public_key():
-    public_txt = open("keys/private_public/latest/private.txt", "r")
-    public_key = RSA.import_key(public_txt.read())
-    public_txt.close()
-    dict_app["session"]["settings"]["message"] = public_key.decrypt(dict_app["session"]["settings"]["message"])
-    print("Mit public key entschlüsselte Nachricht: " + dict_app["session"]["settings"]["message"])
-
+    public_key = RSA.import_key(dict_app["session_settings"]["key"]["public"])
+    decrypter = PKCS1_v1_5.new(public_key)
+    dict_app["session_settings"]["message"] = decrypter.decrypt(dict_app["session_settings"]["message"], RuntimeError)
+    print("Mit public key entschlüsselte Nachricht: " + dict_app["session_settings"]["message"])
 # ! Cryptography
 
 # Else
+
+def chosePrivateOrPublicKey():
+    if dict_app["session_settings"]["action_use"] == dict_app["stored_answers"]["encrypt"]:
+        dict_app["session_settings"]["private_or_public_key"] = dict_app["stored_answers"]["public"]
+    elif dict_app["session_settings"]["action_use"] == dict_app["stored_answers"]["decrypt"]:
+        dict_app["session_settings"]["private_or_public_key"] = dict_app["stored_answers"]["private"]
 
 
 def log():
@@ -701,6 +732,12 @@ def error(message):
     exit()
 
 
+def print_bytes_as_text(bytes_to_text):
+    bytes_to_text = str(bytes_to_text)
+    text_to_list = bytes_to_text.split("'")
+    #text_to_list.pop(0)
+    #text_to_list.pop(1)
+    print(str(text_to_list))
 # ! Else
 
 start()
